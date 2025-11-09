@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" viewport="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galactic Confrontation</title>
+  </head>
+    <title>Galactic Confrontation</title>
+    <style>
+      button {
+        padding: 10px;
+        margin: 10px;
+        border-radius: 5px;
+        border: 1px solid #000;
+        background-color: #f0f0f0;
+        cursor: pointer;
+      }
+      
+      button:hover {
+        background-color: #e0e0e0;
+      }
+
+      .player-info-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .player-info-item {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .player-info-item div {
+        margin-left: 10px;
+      }
+
+      #current-hand-cards {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 10px;
+        height: 300px;
+      }
+
+      .card-name {
+        display: inline-block;
+        margin-right: 10px;
+        padding: 5px;
+        border: 1px solid #000;
+        border-radius: 5px;
+        text-align: center;
+        vertical-align: middle;
+        line-height: 50px;
+        height: 300px;
+        width: 200px;
+      }
+
+      .card-name:hover {
+        background-color: #f0f0f0;
+        cursor: pointer;
+      }
+
+      #action-log {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #000;
+        border-radius: 5px;
+        background-color: #f0f0f0; 
+        height: 350px;
+        overflow-y: scroll;
+      }
+
+      .action-log-item {
+        margin-bottom: 10px;
+        padding: 5px;
+      }
+
+      .action-log-item:nth-child(even) {
+        background-color: #f0f0f0;
+      }
+
+      .action-log-item:nth-child(odd) {
+        background-color: #e0e0e0;
+      }
+
+      .ai-thinking {
+        margin-bottom: 10px;
+        padding: 5px;
+        font-style: italic;
+        color: blue;
+      }
+    </style>
+  </head>
+<body>
+    <h1>Galactic Confrontation</h1>
+    <div id="game-container">
+      <div id="player1-info-container" class="player-info-container">
+        <div  class="player-info-item">Player Name: <div id="player1-name">{{player1.name}}</div></div>
+        <div  class="player-info-item">Health: <div id="player1-health">{{player1.health}}</div></div>
+        <div  class="player-info-item">Damage: <div id="player1-damage">{{player1.damage}}</div></div>
+        <div  class="player-info-item">Defense: <div id="player1-defense">{{player1.defense}}</div></div>
+        <div  class="player-info-item">Cards: <div id="player1-cards">{{player1.cards}}</div></div>
+        <div  class="player-info-item">Buys: <div id="player1-buys">{{player1.buys}}</div></div>
+        <div  class="player-info-item">Actions: <div id="player1-actions">{{player1.actions}}</div></div>
+        <div  class="player-info-item">Impedes: <div id="player1-impedes">{{player1.impedes}}</div></div>
+        <div  class="player-info-item">Trash: <div id="player1-trash">{{player1.trash}}</div></div>
+        <div  class="player-info-item">Credits: <div id="player1-credits">{{player1.credits}}</div></div>
+      </div>
+      <div id="player2-info-container" class="player-info-container">
+        <div  class="player-info-item">Player Name: <div id="player2-name">{{player2.name}}</div></div>
+        <div  class="player-info-item">Health: <div id="player2-health">{{player2.health}}</div></div>
+        <div  class="player-info-item">Damage: <div id="player2-damage">{{player2.damage}}</div></div>
+        <div  class="player-info-item">Defense: <div id="player2-defense">{{player2.defense}}</div></div>
+        <div  class="player-info-item">Cards: <div id="player2-cards">{{player2.cards}}</div></div>
+        <div  class="player-info-item">Buys: <div id="player2-buys">{{player2.buys}}</div></div>
+        <div  class="player-info-item">Actions: <div id="player2-actions">{{player2.actions}}</div></div>
+        <div  class="player-info-item">Impedes: <div id="player2-impedes">{{player2.impedes}}</div></div>
+        <div  class="player-info-item">Trash: <div id="player2-trash">{{player2.trash}}</div></div>
+        <div  class="player-info-item">Credits: <div id="player2-credits">{{player2.credits}}</div></div>
+      </div>
+      <div id="current-hand-container">
+        <div id="current-hand-cards">
+        </div>
+      </div>
+      <div id="player-input-container">
+        <div id="player-input-buttons">
+        </div>
+      </div>
+      <div id="action-log"></div>
+    </div>
+    <script src="engine.js"></script>
+    <script src="ai.js"></script>
+    <script>
+      (async () => {
+        window.gameState = setup();
+        window.ai = new ClaudeAI(window.gameState, '[]');
+        renderGameState(window.gameState);
+        await renderPlayerInputButtons(window.gameState);
+      })();
+
+      
+
+      async function renderPlayerInputButtons(gameState) {
+        if (gameState.currentPlayer.name === "Player B") {
+          // Have AI player play a move
+          document.getElementById("player-input-buttons").innerHTML = `<div class="ai-thinking">AI is thinking...</div>`;
+          // setTimeout(() => {
+            const aiMove = await window.ai.decideMove(availableMoves(gameState));
+            doMove(gameState, aiMove);
+            renderGameState(gameState);
+            await renderPlayerInputButtons(gameState);
+          // }, 1000);
+        } else {
+
+          const availableNextMoves = availableMoves(gameState);
+        // const forApiCall = { gameState: {
+        //   turn: gameState.turn,
+        //   round: gameState.round,
+        //   phase: gameState.phase,
+        //   currentPlayer: {
+        //     name: gameState.currentPlayer.name,
+        //     health: gameState.currentPlayer.health,
+        //     damage: gameState.currentPlayer.damage,
+        //     defense: gameState.currentPlayer.defense,
+        //     cards: gameState.currentPlayer.cards,
+        //     buys: gameState.currentPlayer.buys,
+        //     actions: gameState.currentPlayer.actions,
+        //     impedes: gameState.currentPlayer.impedes,
+        //     trash: gameState.currentPlayer.trash,
+        //     credits: gameState.currentPlayer.credits,
+        //     floatingCredits: gameState.currentPlayer.floatingCredits,
+        //     hand: gameState.currentPlayer.hand,
+        //   },
+        //   otherPlayer: {
+        //     name: gameState.otherPlayer.name,
+        //     health: gameState.otherPlayer.health,
+        //     damage: gameState.otherPlayer.damage,
+        //     defense: gameState.otherPlayer.defense,
+        //   },
+        //   cardSupply: gameState.cardSupply,
+        //   actionLog: gameState.actionLog,
+        //   moves: gameState.moves,
+        // }, availableNextMoves: availableNextMoves };
+          // console.log('for api call', forApiCall);
+          document.getElementById("player-input-buttons").innerHTML = availableNextMoves.map(move => `<button onclick="doMoveUI('${escape(JSON.stringify(move))}')">${gameState.currentPlayer.name}: ${move.description}</button>`).join("");
+        }
+        if (gameState.gameOver) {
+          document.querySelectorAll('button').forEach(button => button.disabled = true);
+        }
+      }
+
+      async function doMoveUI(move) {
+        // console.log('move', unescape(move));
+        doMove(window.gameState, JSON.parse(unescape(move)));
+        renderGameState(window.gameState);
+        await renderPlayerInputButtons(window.gameState);
+      }
+
+      function renderGameState(gameState) {
+        console.log('gameState', gameState);
+        document.getElementById("player1-name").textContent = gameState.currentPlayer.name;
+        document.getElementById("player1-health").textContent = gameState.currentPlayer.health;
+        document.getElementById("player1-damage").textContent = gameState.currentPlayer.damage;
+        document.getElementById("player1-defense").textContent = gameState.currentPlayer.defense;
+        document.getElementById("player1-cards").textContent = gameState.currentPlayer.cards;
+        document.getElementById("player1-buys").textContent = gameState.currentPlayer.buys;
+        document.getElementById("player1-actions").textContent = gameState.currentPlayer.actions;
+        document.getElementById("player1-impedes").textContent = gameState.currentPlayer.impedes;
+        document.getElementById("player1-trash").textContent = gameState.currentPlayer.trash;
+        document.getElementById("player1-credits").textContent = gameState.currentPlayer.credits + gameState.currentPlayer.floatingCredits;
+        document.getElementById("player2-name").textContent = gameState.otherPlayer.name;
+        document.getElementById("player2-health").textContent = gameState.otherPlayer.health;
+        document.getElementById("player2-damage").textContent = gameState.otherPlayer.damage;
+        document.getElementById("player2-defense").textContent = gameState.otherPlayer.defense;
+        document.getElementById("player2-cards").textContent = gameState.otherPlayer.cards;
+        document.getElementById("player2-buys").textContent = gameState.otherPlayer.buys;
+        document.getElementById("player2-actions").textContent = gameState.otherPlayer.actions;
+        document.getElementById("player2-impedes").textContent = gameState.otherPlayer.impedes;
+        document.getElementById("player2-trash").textContent = gameState.otherPlayer.trash;
+        document.getElementById("player2-credits").textContent = gameState.otherPlayer.credits + gameState.otherPlayer.floatingCredits;
+        document.getElementById("current-hand-cards").innerHTML = gameState.currentPlayer.hand.map(card => `<span class="card-name">${card.name}</span>`).join("");
+        const actionLog = document.getElementById("action-log");
+        actionLog.innerHTML = gameState.actionLog.map(log => `<div class="action-log-item">${log}</div>`).join("");
+        actionLog.scrollTo({ top: actionLog.scrollHeight, behavior: "smooth" });
+      }
+    </script>
+</body>
+</html>
