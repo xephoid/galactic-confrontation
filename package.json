@@ -1,5 +1,5 @@
 {
-  "name": "my-turborepo",
+  "name": "galactic-confrontation",
   "private": true,
   "scripts": {
     "build": "turbo run build",
