@@ -51,7 +51,7 @@ Misstep cards have no use in the game. They represent errors in form and techniq
 
 Counter Strike - Price 3 spirit. Allows the player to play 2 more technique cards and add 2 Misstep cards (from the Available Techniques) to their opponent's discard pile.
 
-Reading the Opponent - Price 3 spirit. Allows the player to draw an additional card from their deck and play 2 more technique cards.
+Reading Opponent - Price 3 spirit. Allows the player to draw an additional card from their deck and play 2 more technique cards.
 
 Combination Rush - Price 3 spirit. Allows the player to play 2 more technique cards and lets them channel an additional card during their Channel Phase.
 
